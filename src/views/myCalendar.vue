@@ -4,11 +4,15 @@
             :toDay="iconNum"
             :setCurrentDateStr="currentDateStr"
             :setCurrentDate="currentDate"
-            @getAllDataArr="e=>{allDataArr=e}"
+            @getAllDataArr="
+                (e) => {
+                    allDataArr = e;
+                }
+            "
             @clickDate="clickDate"
             @selectData="
                 (val) => {
-                    selectData = {...val};
+                    selectData = { ...val };
                 }
             "
             @isWeekView="(val) => (isWeekView = val)"
@@ -21,11 +25,7 @@
                     {{ `${selectData.month}月${selectData.day}日 ${weekText || week[selectData.week]}` }}
                 </span>
             </header>
-            <timeEvent
-                @setCurrentDate="getCurrentDate"
-                :selectData="selectData"
-                :allDataArr="allDataArr"
-                :calendarHight="getCalendarHight"></timeEvent>
+            <timeEvent @setCurrentDate="getCurrentDate" :selectData="selectData" :allDataArr="allDataArr" :calendarHight="getCalendarHight"></timeEvent>
         </section>
     </div>
 </template>
@@ -46,7 +46,7 @@ export default defineComponent({
             isWeekView: false,
             weekText: '',
             iconNum: 0,
-            allDataArr: []
+            allDataArr: [],
         });
         const week = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
 
@@ -56,11 +56,11 @@ export default defineComponent({
         };
     },
     watch: {
-        isWeekView(val) {
+        isWeekView() {
             setTimeout(() => {
                 this.getHeight();
             }, 290);
-        }
+        },
     },
     mounted() {
         this.getHeight();
@@ -74,14 +74,13 @@ export default defineComponent({
             this.selectData = val;
             this.weekText = this.week[val.week];
         },
-        getCurrentDate (e:any,str:any){
-            // this.selectData = e;
+        getCurrentDate(e: any, str: any) {
             this.currentDate = {
                 ...e,
-                scrollList: str
+                scrollList: str,
             };
             this.currentDateStr = e.date;
-        }
+        },
     },
 });
 </script>

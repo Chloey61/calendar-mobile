@@ -23,7 +23,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, reactive, toRefs, watch } from 'vue';
+import { getCurrentInstance, defineComponent, onMounted, reactive, toRefs, watch } from 'vue';
 import constData from '../utils/const';
 
 export default defineComponent({
@@ -44,10 +44,12 @@ export default defineComponent({
         setCurrentDate: null,
     },
     setup(props, context) {
+        const internalInstance: any = getCurrentInstance();
+        const globalProperties: any = internalInstance.appContext.app.config.globalProperties;
         const data: any = reactive({
             timeEvents: [
                 {
-                    date: '2021-5-22',
+                    date: globalProperties.$moment().format('YYYY-M-D'),
                     time: '09:00',
                     title: '内部沟通会3',
                     eventType: 1,
@@ -55,7 +57,7 @@ export default defineComponent({
                     meetingRoomName: '5楼B区-华盛顿(电视4-6人)',
                 },
                 {
-                    date: '2021-5-17',
+                    date: globalProperties.$moment().day(1).format('YYYY-M-D'),
                     time: '11:00',
                     title: '修改',
                     eventType: 2,
@@ -63,7 +65,7 @@ export default defineComponent({
                     meetingRoomName: null,
                 },
                 {
-                    date: '2021-5-22',
+                    date: globalProperties.$moment().day(2).format('YYYY-M-D'),
                     time: '09:00',
                     title: '内部沟通会1',
                     eventType: 3,
@@ -71,7 +73,7 @@ export default defineComponent({
                     meetingRoomName: '5楼B区-华盛顿(电视4-6人)',
                 },
                 {
-                    date: '2021-5-12',
+                    date: globalProperties.$moment().day(1).format('YYYY-M-D'),
                     time: '11:00',
                     title: '修改',
                     eventType: 2,
@@ -87,12 +89,9 @@ export default defineComponent({
         const month: any = date.getMonth() + 1;
         const day: any = date.getDate();
         const currentDate = `${year}-${month}-${day}`;
-        // 判断 是否ios getTime有兼容性问题
-        const isiOS = isNaN(new Date('2020-1-1').getTime());
         let prevNUm: any = 0;
         let num: any = 0;
         let scrolldate: any = '';
-
         setClassName(data.timeEvents);
 
         function setClassName(timeEvents: any) {
@@ -103,32 +102,13 @@ export default defineComponent({
                     })[0].class + 'Dot';
             });
         }
-        function sort2(arr: any[]) {
-            const len = arr.length;;
-            for(let j = 0; j < len - 1; j++) {
-                let ind = j;
-                let min = arr[j];
-                const atime:any = new Date(isiOS?`${min.year}/${min.month}/${min.day}`:min.date);
-                for(let i = j + 1; i < len; i++) {
-                    const btime:any = new Date(isiOS?`${arr[i].year}/${arr[i].month}/${arr[i].day}`:arr[i].date);
-                    if (atime > btime) {
-                        min = arr[i];
-                        ind = i;
-                    }
-                }
-                arr[ind] = arr[j];
-                arr[j] = min;
-            }
-            return arr;
-        }
 
         watch(
             () => props.allDataArr,
             async (val: any) => {
-                console.log(val)
-                let arr:any = [...val[0], ...val[1], ...val[2]];
-                let obj:any = {};
-                arr = arr.reduce((item: any[], next: { date: string|number; }) => {
+                let arr: any = [...val[0], ...val[1], ...val[2]];
+                let obj: any = {};
+                arr = arr.reduce((item: any[], next: { date: string | number }) => {
                     if (!obj[next.date]) {
                         item.push(next);
                         obj[next.date] = true;
@@ -136,23 +116,22 @@ export default defineComponent({
                     return item;
                 }, []);
                 arr.sort((a: any, b: any) => {
-                    const atime:any = new Date(isiOS?`${a.year}/${a.month}/${a.day}`:a.date);
-                    const btime:any = new Date(isiOS?`${b.year}/${b.month}/${b.day}`:b.date);
-                    return  atime - btime;
+                    const atime: any = globalProperties.$moment(a.date);
+                    const btime: any = globalProperties.$moment(b.date);
+                    return atime - btime;
                 });
                 arr.forEach((e: any) => {
                     data.events.push({
                         ...e,
-                        class: e.date == currentDate ? '' : new Date(isiOS ? `${e.year}/${e.month}/${e.day}` : e.date) <= date ? 'pastTime' : '',
+                        class: e.date == currentDate ? '' : globalProperties.$moment(e.date) <= globalProperties.$moment(date) ? 'pastTime' : '',
                         event: data.timeEvents.filter((i: any) => {
                             return i.date == e.date;
                         }),
                     });
                 });
 
-
                 setTimeout(() => {
-                    data.events.forEach((i: any, index: any) => {
+                    data.events.forEach((i: any) => {
                         const dom: any = document.getElementById(i.date);
                         const num = dom.offsetTop - 10;
                         i.top = num;
@@ -163,7 +142,6 @@ export default defineComponent({
         watch(
             () => props.selectData,
             async (val: any) => {
-                console.log(val)
                 const date = val.date || `${val.year}-${val.month}-${val.day}`;
                 num++;
                 scrollDate(date, 'watch');
@@ -171,8 +149,7 @@ export default defineComponent({
         );
 
         // 日历点击日期
-        function scrollDate(date: string, type: any ) {
-            console.log('selectData',date)
+        function scrollDate(date: string, type: any) {
             const domDate: any = document.getElementById(date);
             if (!domDate) return;
             const num: any = domDate.offsetTop - 10;
@@ -191,11 +168,9 @@ export default defineComponent({
             const dateObj: any = data.events.filter((i: any, index: any) => {
                 return scrollNum >= i.top && scrollNum < data.events[index + 1].top;
             });
-            console.log(num)
             if (dateObj.length > 0 && scrolldate != dateObj[0].date && num == 1) {
-                console.log(props.selectData)
                 scrolldate = dateObj[0].date;
-                context.emit('setCurrentDate', dateObj[0],'scrollList');
+                context.emit('setCurrentDate', dateObj[0], 'scrollList');
             }
 
             num = 0;

@@ -73,7 +73,7 @@
 </template>
 
 <script>
-import { defineComponent, reactive, toRefs, watch } from 'vue';
+import { getCurrentInstance, defineComponent, reactive, toRefs } from 'vue';
 import calendarLunar from '../utils/lunar';
 
 export default defineComponent({
@@ -91,36 +91,38 @@ export default defineComponent({
         },
     },
     setup() {
+        const internalInstance = getCurrentInstance();
+        const globalProperties = internalInstance.appContext.app.config.globalProperties;
         const data = reactive({
             weekArr: ['日', '一', '二', '三', '四', '五', '六'], // 星期数组
-            eventArr: ['2021-5-12', '2021-5-17', '2021-5-22'], // 事件日程
+            eventArr: [globalProperties.$moment().format('YYYY-M-D'), globalProperties.$moment().day(1).format('YYYY-M-D'), globalProperties.$moment().day(2).format('YYYY-M-D')], // 事件日程
             datesArr: [
                 {
-                    date: '2021-4-25',
+                    date: globalProperties.$moment().format('YYYY-M-D'),
                     dateType: 1,
                 },
                 {
-                    date: '2021-5-1',
+                    date: globalProperties.$moment().day(0).format('YYYY-M-D'),
                     dateType: 2,
                 },
                 {
-                    date: '2021-5-2',
+                    date: globalProperties.$moment().day(1).format('YYYY-M-D'),
                     dateType: 2,
                 },
                 {
-                    date: '2021-5-3',
+                    date: globalProperties.$moment().day(2).format('YYYY-M-D'),
                     dateType: 2,
                 },
                 {
-                    date: '2021-5-4',
+                    date: globalProperties.$moment().day(3).format('YYYY-M-D'),
                     dateType: 2,
                 },
                 {
-                    date: '2021-5-5',
+                    date: globalProperties.$moment().day(4).format('YYYY-M-D'),
                     dateType: 2,
                 },
                 {
-                    date: '2021-5-8',
+                    date: globalProperties.$moment().format('YYYY-M-D'),
                     dateType: 1,
                 },
             ], // 班、休
@@ -180,7 +182,6 @@ export default defineComponent({
             this.$emit('isWeekView', val);
         },
         selectDataStr(val) {
-            console.log('selectDataStr', val);
             this.$emit('selectData', this.selectData);
             // this.$emit('clickDate', this.selectData);
         },

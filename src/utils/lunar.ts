@@ -1,25 +1,25 @@
-interface Calendar {
-    gregorianYear: number; //公历年
-    gregorianMonth: string; //公历月
-    gregorianDay: string; //公历日
-    weekday: string; //星期
-    hours: string;
-    minutes: string;
-    seconds: string;
+// interface Calendar {
+//     gregorianYear: number; //公历年
+//     gregorianMonth: string; //公历月
+//     gregorianDay: string; //公历日
+//     weekday: string; //星期
+//     hours: string;
+//     minutes: string;
+//     seconds: string;
 
-    lunarYear: number; //农历年
-    lunarMonth: number; //农历月
-    lunarDay: number; //农历日
+//     lunarYear: number; //农历年
+//     lunarMonth: number; //农历月
+//     lunarDay: number; //农历日
 
-    lunarYearCn: string; //农历天干地支纪年
-    lunarMonthCn: string; //农历中文月
-    lunarDayCn: string; //农历中文日
-    zodiacYear: string; //农历生肖年
+//     lunarYearCn: string; //农历天干地支纪年
+//     lunarMonthCn: string; //农历中文月
+//     lunarDayCn: string; //农历中文日
+//     zodiacYear: string; //农历生肖年
 
-    solarTerm: string; //节气
-    gregorianFestival: string; //公历节日
-    lunarFestival: string; //农历节日
-}
+//     solarTerm: string; //节气
+//     gregorianFestival: string; //公历节日
+//     lunarFestival: string; //农历节日
+// }
 
 const lunarInfo = [
     0x04bd8,
@@ -179,38 +179,9 @@ const Gan = ['甲', '乙', '丙', '丁', '戊', '己', '庚', '辛', '壬', '癸
 const Zhi = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'];
 const weekday = ['星期一', '星期二', '星期三', '星期四', '星期五', '星期六', '星期日'];
 //公历节日
-const sFtv = new Array(
-    "0101 元旦",
-    "0214 情人节",
-    "0308 妇女节",
-    "0312 植树节",
-    "0315 消费者权益日",
-    "0401 愚人节",
-    "0501 劳动节",
-    "0504 青年节",
-    "0512 护士节",
-    "0601 儿童节",
-    "0701 建党节",
-    "0801 建军节",
-    "0910 教师节",
-    "0928 孔子诞辰",
-    "1001 国庆节",
-    "1006 老人节",
-    "1024 联合国日",
-    "1224 平安夜",
-    "1225 圣诞节"
-)
+// const sFtv = new Array('0101 元旦', '0214 情人节', '0308 妇女节', '0312 植树节', '0315 消费者权益日', '0401 愚人节', '0501 劳动节', '0504 青年节', '0512 护士节', '0601 儿童节', '0701 建党节', '0801 建军节', '0910 教师节', '0928 孔子诞辰', '1001 国庆节', '1006 老人节', '1024 联合国日', '1224 平安夜', '1225 圣诞节');
 //农历节日
-const lFtv = new Array(
-    "0101 春节",
-    "0115 元宵节",
-    "0505 端午节",
-    "0707 七夕情人节",
-    "0715 中元节",
-    "0815 中秋节",
-    "0909 重阳节",
-    "1208 腊八节"
-)
+// const lFtv = new Array('0101 春节', '0115 元宵节', '0505 端午节', '0707 七夕情人节', '0715 中元节', '0815 中秋节', '0909 重阳节', '1208 腊八节');
 //==== 传入 offset 传回干支, 0=甲子
 function cyclical(num: number) {
     return Gan[num % 10] + Zhi[num % 12];
@@ -247,7 +218,7 @@ function monthDays(year: number, month: number) {
 
 //==== 算出农历, 传入日期对象, 传回农历日期对象
 //     该对象属性有 农历年year 农历月month 农历日day 是否闰年isLeap yearCyl dayCyl monCyl
-function Lunar(GY:any,GM:any,GD:any,str:any) {
+function Lunar(GY: any, GM: any, GD: any, str: any) {
     let objDate = new Date(GY, GM, GD);
     let i,
         temp = 0;
@@ -366,7 +337,7 @@ function cDay(m: number, d: number) {
 }
 
 //节气
-function getSolarTerm(GY:any,GM:any,GD:any) {
+function getSolarTerm(GY: any, GM: any, GD: any) {
     const sTermInfo = [0, 21208, 42467, 63836, 85337, 107014, 128867, 150921, 173149, 195551, 218072, 240693, 263343, 285989, 308563, 331033, 353350, 375494, 397447, 419210, 440795, 462224, 483532, 504758];
     const solarTerm = ['小寒', '大寒', '立春', '雨水', '惊蛰', '春分', '清明', '谷雨', '立夏', '小满', '芒种', '夏至', '小暑', '大暑', '立秋', '处暑', '白露', '秋分', '寒露', '霜降', '立冬', '小雪', '大雪', '冬至'];
 
@@ -381,7 +352,7 @@ function getSolarTerm(GY:any,GM:any,GD:any) {
     return solarTerms;
 }
 
-function lunar (str:any) {
+function lunar(str: any) {
     const now = new Date(str);
 
     //用于计算农历年月日的数据
@@ -412,7 +383,7 @@ function lunar (str:any) {
     calendar.seconds = seconds;
 
     //去掉时分秒的日期
-    const lDObj = Lunar(GY, GM, GD,str);
+    const lDObj = Lunar(GY, GM, GD, str);
 
     //农历年月日、生肖年
     calendar.lunarYear = lDObj.year;
@@ -426,7 +397,7 @@ function lunar (str:any) {
     calendar.lunarDayCn = cDay(lDObj.month, lDObj.day).lunarDayCn;
 
     //节气
-    calendar.solarTerm = getSolarTerm(GY,GM,GD);
+    calendar.solarTerm = getSolarTerm(GY, GM, GD);
 
     return calendar;
 }
